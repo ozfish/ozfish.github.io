@@ -1,12 +1,7 @@
 
 .center-message {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  -webkit-transform: translate(-50%, -50%);
-  transform: translate(-50%, -50%);
   z-index: 1;
-  width: fit-content;
 }
 
 .phone-logo {
@@ -35,4 +30,21 @@
 
 .center-message a {
   text-align: center;
+}
+
+@media (max-width: 500px) {
+  .center-message {
+    width: auto;
+  }  
+}
+
+@media (min-width: 500px) {
+  .center-message {
+    width: 100%;
+  }
+  .center-message > div {
+    width: 35%;
+    margin-left: auto;
+    margin-right: auto;
+  }
 }

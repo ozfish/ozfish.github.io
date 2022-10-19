@@ -153,7 +153,7 @@ const RegisterPage = () => {
           </Card>
         </div>
       </div>
-      <div className="background"></div>
+      <div className="register-background"></div>
     </div>
   );
 };

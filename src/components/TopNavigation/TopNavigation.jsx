@@ -3,7 +3,7 @@ import "./TopNavigation.css";
 
 const TopNavigation = (props) => {
   return <div className="top-navigation">
-    <div className="flex justify-between">
+    <div className="flex justify-between wrap-mobile">
       <div className="flex">
         <span>Hi, {props.username}! You have {props.daysLeft} Days Left In Your Trial. </span>
         <button className="btn green">Manage Subscription</button>
