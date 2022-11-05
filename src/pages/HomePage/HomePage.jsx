@@ -1,11 +1,19 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import Card from "../../components/Card/Card";
+import Footer from "../../components/Footer/Footer";
+import Loader from "../../components/Loader/Loader";
 import Navbar from "../../components/Navbar/Navbar";
-import { plans } from "../../data/api-mock";
+import { getProducts } from "../../data/api";
 import "./HomePage.css";
 
 const HomePage = () => {
+  const [bpProducts, setBpProducts] = useState([]);
+
+  useEffect(() => {
+    getProducts().then(setBpProducts);
+  }, []);
+
   return (
     <div>
       <Navbar />
@@ -21,44 +29,62 @@ const HomePage = () => {
           </div>
           <div>
             <div className="plans">
-              {plans.map((item, index) => (
-                <Card key={item.id}>
-                  <div className="flex column text-center">
-                    <div className="flex justify-center plan-logo">
-                      <img src={`/Plan-${item.id}.png`} alt="plan" />
+              {!bpProducts.length ? (
+                <Loader />
+              ) : (
+                bpProducts.map((item, index) => (
+                  <Card key={item.id}>
+                    <div className="flex column text-center">
+                      <div className="flex justify-center plan-logo">
+                        <img src={`/Plan-${index + 1}.png`} alt="plan" />
+                      </div>
+                      <h4 className="card-title">{item.title}</h4>
+                      <h2 className="card-price">
+                        {item.currencySign}
+                        {item.price || item.priceDescription}
+                      </h2>
+                      <span className="price-description">USD/MONTH</span>
+                      {item.price ? (
+                        <Link to={`/register?planId=${item.id}`}>
+                          <button
+                            className={`btn ${
+                              index % 2 === 0 ? "blue" : "green"
+                            } try-btn`}
+                          >
+                            Try it now
+                          </button>
+                        </Link>
+                      ) : (
+                        <button
+                          className={`btn ${
+                            index % 2 === 0 ? "blue" : "green"
+                          } try-btn`}
+                        >
+                          Contact Us
+                        </button>
+                      )}
+                      <div className="plan-description flex column justify-center m-auto">
+                        {item.description.map((desc) => (
+                          <div key={desc} className="flex description">
+                            <img
+                              src="/Check-icon.png"
+                              className="check"
+                              alt="check"
+                            />
+                            <span className="text-left">{desc}</span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <h4 className="card-title">{item.title}</h4>
-                    <h2 className="card-price">{item.price}</h2>
-                    <span className="price-description">USD/MONTH</span>
-                    <Link to={`/register?planId=${item.id}`}>
-                      <button
-                        className={`btn ${
-                          index % 2 === 0 ? "blue" : "green"
-                        } try-btn`}
-                      >
-                        Try it now
-                      </button>
-                    </Link>
-                    <div className="plan-description flex column justify-center m-auto">
-                      {item.description.map((desc) => (
-                        <div key={desc} className="flex description">
-                          <img
-                            src="/Check-icon.png"
-                            className="check"
-                            alt="check"
-                          />
-                          <span className="text-left">{desc}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                </Card>
-              ))}
+                  </Card>
+                ))
+              )}
             </div>
           </div>
         </div>
       </div>
       <div className="home-background"></div>
+      <Footer/>
     </div>
   );
 };

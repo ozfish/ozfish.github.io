@@ -10,3 +10,7 @@
   border-radius: 30px;
 }
 
+.disaled-card {
+  pointer-events: none;
+  opacity: 0.5;
+}

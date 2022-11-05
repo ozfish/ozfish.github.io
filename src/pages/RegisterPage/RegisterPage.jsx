@@ -1,13 +1,10 @@
-import React from "react";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState } from "react";
 import Navbar from "../../components/Navbar/Navbar";
 import Card from "../../components/Card/Card";
-import Divider from "../../components/Divider/Divider";
-import Input from "../../components/Input/Input";
-import Select from "../../components/Select/Select";
 import "./RegisterPage.css";
-import Tabs from "../../components/Tabs/Tabs";
-import { countries, states, plans } from "../../data/api-mock";
+import PaymentForm from "../../components/PaymentForm/PaymentForm";
+import { getProducts } from "../../data/api";
+import Footer from "../../components/Footer/Footer";
 
 const getQueryParam = (name) => {
   if (
@@ -18,18 +15,24 @@ const getQueryParam = (name) => {
     return decodeURIComponent(name[1]);
 };
 
-const getSelectedPlan = () => {
+const getSelectedPlan = (plans) => {
   const id = getQueryParam("planId");
-  if (id && !window.isNaN(id)) {    
-    return plans.find(item => item.id === Number(id));
+  if (id && !window.isNaN(id)) {
+    return plans.find((item) => Number(item.id) === Number(id));
   }
   return plans[0];
-}
-
+};
 
 const RegisterPage = () => {
 
-  const selectedPlan = getSelectedPlan();
+  const [selectedPlan, setSelectedPlan] = useState(null);
+  const [allowForm, setAllowForm] = useState(false);
+
+  useEffect(() => {
+    getProducts().then(data => {
+      setSelectedPlan(getSelectedPlan(data));
+    });
+  }, []);
 
   return (
     <div>
@@ -37,18 +40,37 @@ const RegisterPage = () => {
       <div className="flex justify-between w-full page-content">
         <div className="w-full form-description">
           <div className="text-center">
-            <h3 className="header">Start your 30-day free trial</h3>
+            <h3 className="header">Shoping cart:</h3>
           </div>
           <div>
-            <div className="plan-description flex column m-auto">
-              {
-                selectedPlan?.description?.map(item => (
-                  <div className="flex" key={item}>
-                    <img src="/Check-icon.png" className="my-auto" alt="check" />
-                    <span>{item}</span>
-                  </div>
-                ))
-              }
+            <div className="flex column">
+              <div className="flex w-full justify-between">
+                <span>{selectedPlan?.fullTitle || selectedPlan?.title}</span>
+                <span>{selectedPlan?.currencySign} {selectedPlan?.price}</span>
+              </div>
+              <div className="flex w-full justify-between">
+                <span>Tax</span>
+                <span>{selectedPlan?.currencySign} 0</span>
+              </div>
+              <div className="flex w-full justify-between total-block">
+                <span>Total</span>
+                <span>{selectedPlan?.currencySign} {selectedPlan?.price}</span>
+              </div>
+              {/* {selectedPlan?.description?.map((item) => (
+                <div className="flex" key={item}>
+                  <img src="/Check-icon.png" className="my-auto" alt="check" />
+                  <span>{item}</span>
+                </div>
+              ))} */}
+              <span className="card-label">Your card will be charged on(Current date + 30 days). You can cancel anytime before that.</span>
+
+              <div className="terms-block">
+                <h4>Terms & Conditions</h4>
+                <div className="flex">
+                  <input type="checkbox" checked={allowForm} onChange={e => setAllowForm(e.target.checked)} />
+                  <span className="terms-text">I have read and agree to the <a className="terms" href="https://billingplatform.com/terms-of-use" target="_blank" rel="noreferrer">Terms of use</a></span>
+                </div>
+              </div>
             </div>
           </div>
           <div className="businesses">
@@ -70,90 +92,13 @@ const RegisterPage = () => {
           </div>
         </div>
         <div className="w-full billing-form">
-          <Card>
-            <Divider>Billing Contact</Divider>
-            <div className="flex justify-between w-full">
-              <Input placeholder="First name..." name="firstName" />
-              <Input placeholder="Last name..." name="lastName" />
-            </div>
-            <div className="flex justify-between w-full">
-              <Input placeholder="Email..." name="email" />
-              <Input placeholder="Username..." name="username" />
-            </div>
-            <Divider>Billing Address</Divider>
-            <div className="flex justify-between w-full">
-              <Select
-                placeholder="Country..."
-                name="country"
-                options={countries}
-              />
-              <Input placeholder="City..." name="city" />
-            </div>
-            <div className="flex justify-between w-full">
-              <Input placeholder="Street..." name="street" />
-              <Input placeholder="Apt/Suite..." name="apt" />
-            </div>
-            <div className="flex justify-between w-full">
-              <Select placeholder="State..." name="state" options={states} />
-              <Input placeholder="ZIP/Postal..." name="zip" />
-              <Input placeholder="GST number (optional)..." name="gst" />
-            </div>
-            <Divider>Payment Method</Divider>
-            <Tabs
-              value="CC"
-              data={[
-                {
-                  value: "CC",
-                  label: (
-                    <div className="flex">
-                      <img src={"./CC-icon.png"} alt="CC-icon" />
-                      <span>Credit Card</span>
-                    </div>
-                  ),
-                },
-                {
-                  value: "Paypal",
-                  label: (
-                    <div className="flex">
-                      <img src={"./Paypal-icon.png"} alt="CC-icon" />
-                      <span>PayPal</span>
-                    </div>
-                  ),
-                },
-              ]}
-            />
-            <div className="tab-content">
-              <div className="flex justify-between w-full">
-                <span>Name on credit card</span>
-                <Input
-                  placeholder="Name on credit card"
-                  name="creditCardName"
-                />
-              </div>
-              <div className="flex justify-between w-full">
-                <span>Credit Card number</span>
-                <Input
-                  placeholder="XXXX - XXXX - XXXX - XXXX"
-                  name="creditCardNumber"
-                />
-              </div>
-              <div className="flex justify-between w-full">
-                <span>Expiration Date</span>
-                <div className="flex justify-between w-full inputs-row">
-                  <Input placeholder="MM" name="expiryMonth" />
-                  <Input placeholder="YYYY" name="expiryYear" />
-                  <span>CVV</span>
-                  <Input placeholder="XXX" name="cvv" />
-                </div>
-              </div>
-            </div>
-            <Link to="/portal">
-              <button className="btn green w-full">Register now</button>
-            </Link>
+          <Card disabled={!allowForm}>
+            <PaymentForm plan={selectedPlan} />
           </Card>
         </div>
       </div>
       <div className="register-background"></div>
+      <Footer/>
     </div>
   );
 };

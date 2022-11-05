@@ -2,13 +2,15 @@ export const plans = [
   {
     id: 1,
     title: "Standard",
-    price: "$100",
+    price: "100",
+    currencySign: "$",
     description: ["Complete cloud data warehouse", "Secure data sharing"],
   },
   {
     id: 2,
     title: "Premium",
-    price: "$180",
+    price: "180",
+    currencySign: "$",
     description: [
       "Multi-cluster warehouse",
       "Premium 24x365 support",
@@ -17,8 +19,9 @@ export const plans = [
   },
   {
     id: 3,
-    title: "Enterprice",
-    price: "Contact Us",
+    title: "Enterprise",
+    price: null,
+    priceDescription: "Contact Us",
     description: [
       "PCI compliance",
       "HIPAA support",
