@@ -92,13 +92,18 @@ export const createBillingProfile = async (AccountId, formData) => {
 
 export const createAccountProduct = async (AccountId, ProductId) => {
   try {
+    const StartDate = new Date().toISOString().split("T")[0];
+    const EndDate = new Date();
+    const END_DATE_PLUS_DAYS = 30;
+    EndDate.setDate(EndDate.getDate() + END_DATE_PLUS_DAYS);
     const bpResponse = await fetch(`${process.env.REACT_APP_BP_URL}/ACCOUNT_PRODUCT`, {
       method: "POST",
       body: JSON.stringify({
         brmObjects: [{
           Quantity: 1,
           Status: "ACTIVE",
-          StartDate: new Date().toISOString().split("T")[0],
+          StartDate,
+          EndDate: EndDate.toISOString().split("T")[0],
           ProductId,
           AccountId
         }]
@@ -117,9 +122,9 @@ export const createAccountProduct = async (AccountId, ProductId) => {
 
 export const getAccountByName = async (name) => {
   try {
-    if (!sessionId) {
-      await login();
-    }
+    // if (!sessionId) {
+    //   await login();
+    // }
     const accountResponse = await fetch(
       `${process.env.REACT_APP_BP_URL}/query?sql=SELECT a.Id, bp.HostedPaymentPageExternalId FROM Account a LEFT JOIN Billing_Profile bp ON bp.AccountId = a.Id WHERE a.Name = '${name}'`,
       { headers: { sessionId } }
@@ -132,9 +137,9 @@ export const getAccountByName = async (name) => {
 
 export const getProducts = async () => {
   try {
-    if (!sessionId) {
-      await login();
-    }
+    // if (!sessionId) {
+    //   await login();
+    // }
     const cachedProducts = localStorage.getItem("products");
     if (cachedProducts) {
       return JSON.parse(cachedProducts);
@@ -178,4 +183,23 @@ const findDefaultInvoiceTemplateId = async () => {
     .then(resp => resp.json());
   return queryResponse?.[0].Id;
 
+};
+
+const originalFetch = fetch;
+// eslint-disable-next-line
+fetch = function () {
+  let self = this;
+  let args = arguments;
+  return originalFetch.apply(self, args).then(async function (data) {
+    if (data.status === 500) {
+      const initialResponse = await data.json();
+      const { errors } = initialResponse;
+      if (errors && errors.length && errors[0].error_code === "INVALID_SESSION_ID") {
+        await login();
+      }
+      args[1].headers.sessionId = sessionId;
+      return originalFetch.apply(self, args);
+    }
+    return data;
+  });
 };

@@ -82,9 +82,10 @@ const HomePage = () => {
             </div>
           </div>
         </div>
-      </div>
-      <div className="home-background"></div>
       <Footer/>
+      </div>
+      {/* <div className="home-background"></div> */}
+      {/* <div className="home-cloud-data-icon"></div> */}
     </div>
   );
 };
