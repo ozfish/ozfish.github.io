@@ -1,15 +1,15 @@
 export const plans = [
   {
     id: 1,
-    title: "Standard",
-    price: "100",
+    title: "Business Bronze",
+    price: "40",
     currencySign: "$",
     description: ["Complete cloud data warehouse", "Secure data sharing"],
   },
   {
     id: 2,
-    title: "Premium",
-    price: "180",
+    title: "Business Silver",
+    price: "50",
     currencySign: "$",
     description: [
       "Multi-cluster warehouse",
@@ -19,9 +19,9 @@ export const plans = [
   },
   {
     id: 3,
-    title: "Enterprise",
-    price: null,
-    priceDescription: "Contact Us",
+    title: "Business Gold",
+    price: "70",
+    currencySign: "$",
     description: [
       "PCI compliance",
       "HIPAA support",
@@ -32,7 +32,14 @@ export const plans = [
   },
 ];
 
-export const countries = ["USA", "Canada", "Germany", "Poland", "China", "Japan"]
+export const countries = [
+  "USA",
+  "Canada",
+  "Germany",
+  "Poland",
+  "China",
+  "Japan",
+]
   .sort()
   .map((item) => ({ value: item, label: item }));
 

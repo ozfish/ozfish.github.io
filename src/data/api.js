@@ -20,7 +20,7 @@ export const login = async () => {
   } catch (e) {
     return null;
   }
-}
+};
 
 export const getAccountType = async () => {
   try {
@@ -32,54 +32,61 @@ export const getAccountType = async () => {
   } catch (e) {
     return null;
   }
-}
+};
 
 export const createAccount = async (name) => {
   try {
     await fetch(`${process.env.REACT_APP_BP_URL}/ACCOUNT`, {
       method: "POST",
       body: JSON.stringify({
-        brmObjects: [{
-          Name: name,
-          Status: "ACTIVE",
-          AccountTypeId: (await getAccountType())
-        }]
+        brmObjects: [
+          {
+            Name: name,
+            Status: "ACTIVE",
+            AccountTypeId: await getAccountType(),
+          },
+        ],
       }),
-      headers: { sessionId }
-    }).then(resp => resp.json());
+      headers: { sessionId },
+    }).then((resp) => resp.json());
     return await getAccountByName(name);
   } catch (e) {
     return null;
   }
-}
+};
 
 export const createBillingProfile = async (AccountId, formData) => {
   try {
-    const bpResponse = await fetch(`${process.env.REACT_APP_BP_URL}/BILLING_PROFILE`, {
-      method: "POST",
-      body: JSON.stringify({
-        brmObjects: [{
-          Address1: formData.addr1,
-          Email: formData.email,
-          Country: formData.country,
-          City: formData.city,
-          State: formData.state,
-          Zip: formData.zip,
-          TimeZoneId: "0",
-          CurrencyCode: "USD",
-          MonthlyBillingDate: 31,
-          PaymentTermDays: "0",
-          // BillingMethod: "MAIL",
-          BillingMethod: "Electronic Payment",
-          BillingCycle: "MONTHLY",
-          BillTo: `${formData.firstName} ${formData.lastName}`,
-          InvoiceTemplateId: await findDefaultInvoiceTemplateId(),
-          Status: "ACTIVE",
-          AccountId
-        }]
-      }),
-      headers: { sessionId }
-    }).then(resp => resp.json());
+    const bpResponse = await fetch(
+      `${process.env.REACT_APP_BP_URL}/BILLING_PROFILE`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          brmObjects: [
+            {
+              Address1: formData.addr1,
+              Email: formData.email,
+              Country: formData.country,
+              City: formData.city,
+              State: formData.state,
+              Zip: formData.zip,
+              TimeZoneId: "0",
+              CurrencyCode: "USD",
+              MonthlyBillingDate: 31,
+              PaymentTermDays: "0",
+              // BillingMethod: "MAIL",
+              BillingMethod: "Electronic Payment",
+              BillingCycle: "MONTHLY",
+              BillTo: `${formData.firstName} ${formData.lastName}`,
+              InvoiceTemplateId: await findDefaultInvoiceTemplateId(),
+              Status: "ACTIVE",
+              AccountId,
+            },
+          ],
+        }),
+        headers: { sessionId },
+      }
+    ).then((resp) => resp.json());
     const savedBP = await fetch(
       `${process.env.REACT_APP_BP_URL}/query?sql=SELECT bp.HostedPaymentPageExternalId FROM Billing_Profile bp WHERE bp.Id = ${bpResponse?.createResponse?.[0].Id}`,
       { headers: { sessionId } }
@@ -88,7 +95,7 @@ export const createBillingProfile = async (AccountId, formData) => {
   } catch (e) {
     return null;
   }
-}
+};
 
 export const createAccountProduct = async (AccountId, ProductId) => {
   try {
@@ -96,20 +103,25 @@ export const createAccountProduct = async (AccountId, ProductId) => {
     const EndDate = new Date();
     const END_DATE_PLUS_DAYS = 30;
     EndDate.setDate(EndDate.getDate() + END_DATE_PLUS_DAYS);
-    const bpResponse = await fetch(`${process.env.REACT_APP_BP_URL}/ACCOUNT_PRODUCT`, {
-      method: "POST",
-      body: JSON.stringify({
-        brmObjects: [{
-          Quantity: 1,
-          Status: "ACTIVE",
-          StartDate,
-          EndDate: EndDate.toISOString().split("T")[0],
-          ProductId,
-          AccountId
-        }]
-      }),
-      headers: { sessionId }
-    }).then(resp => resp.json());
+    const bpResponse = await fetch(
+      `${process.env.REACT_APP_BP_URL}/ACCOUNT_PRODUCT`,
+      {
+        method: "POST",
+        body: JSON.stringify({
+          brmObjects: [
+            {
+              Quantity: 1,
+              Status: "ACTIVE",
+              StartDate,
+              EndDate: EndDate.toISOString().split("T")[0],
+              ProductId,
+              AccountId,
+            },
+          ],
+        }),
+        headers: { sessionId },
+      }
+    ).then((resp) => resp.json());
     const savedBP = await fetch(
       `${process.env.REACT_APP_BP_URL}/query?sql=SELECT bp.HostedPaymentPageExternalId FROM Billing_Profile bp WHERE bp.Id = ${bpResponse?.createResponse?.[0].Id}`,
       { headers: { sessionId } }
@@ -118,7 +130,7 @@ export const createAccountProduct = async (AccountId, ProductId) => {
   } catch (e) {
     return null;
   }
-}
+};
 
 export const getAccountByName = async (name) => {
   try {
@@ -133,7 +145,7 @@ export const getAccountByName = async (name) => {
   } catch (e) {
     return null;
   }
-}
+};
 
 export const getProducts = async () => {
   try {
@@ -145,25 +157,32 @@ export const getProducts = async () => {
       return JSON.parse(cachedProducts);
     }
     const productResponse = await fetch(
-      `${process.env.REACT_APP_BP_URL}/query?sql=SELECT Name, Id FROM Product WHERE Name IN ('Cloud Data Standard Trial','Cloud Data Premium Trial')`,
+      `${process.env.REACT_APP_BP_URL}/query?sql=SELECT Name, Id FROM Product WHERE Name IN ('SPOOFNOS Business Bronze','SPOOFNOS Business Silver','SPOOFNOS Business Gold')`,
       { headers: { sessionId } }
     ).then((resp) => resp.json());
     const products = productResponse?.queryResponse;
-    const standard = products.find(item => item.Name.indexOf("Standard") !== -1);
-    const premium = products.find(item => item.Name.indexOf("Premium") !== -1);
-    const parsedPlans = plans.map(item => {
-      if (item.title === "Standard") {
+    const bronze = products.find((item) => item.Name.indexOf("Bronze") !== -1);
+    const silver = products.find((item) => item.Name.indexOf("Silver") !== -1);
+    const gold = products.find((item) => item.Name.indexOf("Gold") !== -1);
+    const parsedPlans = plans.map((item) => {
+      if (item.title === "Business Bronze") {
         return {
           ...item,
-          fullTitle: standard?.Name,
-          id: standard?.Id
-        }
-      } else if (item.title === "Premium") {
+          fullTitle: bronze?.Name,
+          id: bronze?.Id,
+        };
+      } else if (item.title === "Business Silver") {
         return {
           ...item,
-          fullTitle: premium?.Name,
-          id: premium?.Id
-        }
+          fullTitle: silver?.Name,
+          id: silver?.Id,
+        };
+      } else if (item.title === "Business Gold") {
+        return {
+          ...item,
+          fullTitle: gold?.Name,
+          id: gold.Id,
+        };
       }
       return item;
     });
@@ -175,14 +194,15 @@ export const getProducts = async () => {
 };
 
 const findDefaultInvoiceTemplateId = async () => {
-  const { queryResponse } = await fetch(`${process.env.REACT_APP_BP_URL}/query?sql=SELECT Id FROM Invoice_Template WHERE Name = 'Default Invoice Template'`, {
-    headers: {
-      sessionId
+  const { queryResponse } = await fetch(
+    `${process.env.REACT_APP_BP_URL}/query?sql=SELECT Id FROM Invoice_Template WHERE Name = 'Default Invoice Template'`,
+    {
+      headers: {
+        sessionId,
+      },
     }
-  })
-    .then(resp => resp.json());
+  ).then((resp) => resp.json());
   return queryResponse?.[0].Id;
-
 };
 
 const originalFetch = fetch;
@@ -194,7 +214,11 @@ fetch = function () {
     if (data.status === 500) {
       const initialResponse = await data.json();
       const { errors } = initialResponse;
-      if (errors && errors.length && errors[0].error_code === "INVALID_SESSION_ID") {
+      if (
+        errors &&
+        errors.length &&
+        errors[0].error_code === "INVALID_SESSION_ID"
+      ) {
         await login();
       }
       args[1].headers.sessionId = sessionId;

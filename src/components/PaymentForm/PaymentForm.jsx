@@ -18,7 +18,7 @@ const defaultFormData = {
   state: "",
   city: "",
   addr1: "",
-  zip: ""
+  zip: "",
 };
 
 const formSteps = {
@@ -47,7 +47,7 @@ const PaymentForm = ({ plan }) => {
           // amount: Number(plan?.price),
           walletMode: true,
           apiUrl:
-            "https://my.billingplatform.com/standard_demo/hostedPayments/1.0",
+            "https://my.billingplatform.com/spoofnos_demo/hostedPayments/1.0",
           paymentGateways: {
             creditCard: { gateway: "StaxPayments_CC" },
             directDebit: { gateway: "StaxPayments_DD" },

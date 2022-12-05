@@ -9,7 +9,7 @@ const Navbar = () => {
         <div className="nav-header">
           <div className="nav-title">
             <Link to="/">
-              <img src="/Logo-text.png" alt="logo" />
+              <img src="/spoofnos-logo.png" alt="logo" />
             </Link>
           </div>
         </div>
@@ -28,7 +28,7 @@ const Navbar = () => {
       <div className="sm-nav">
         <header className="sm-header">
           <Link to="/" className="my-auto">
-            <img src="/Logo-text.png" alt="logo" className="logo" />
+            <img src="/spoofnos-logo.png" alt="logo" className="logo" />
           </Link>
 
           <input className="side-menu" type="checkbox" id="side-menu" />
